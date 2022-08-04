@@ -21,8 +21,14 @@ async def start(message: types.Message):
 
 # при отправке сообщений
 @dp.message_handler(content_types=['text'])
-async def join_msg(message):
-    BotDB.add_msg(message.from_user.id, message.text)
+async def join_msg(message: types.Message):
+    text = message.text.lower()
+    for word in config.spam:
+        if word in text:
+            await message.delete()
+            await message.bot.send_message(message.from_user.id, 'не используйте запрещённые слова!')
+        else:
+            BotDB.add_msg(message.from_user.id, message.text)
 
 # при отправке файлов
 @dp.message_handler(content_types=['photo', 'video', 'document'])
